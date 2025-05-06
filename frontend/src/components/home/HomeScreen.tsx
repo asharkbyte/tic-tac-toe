@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
 import { GameMode } from '../../types';
-import { Button } from '../ui/button';
 
 const HomeScreen: React.FC = () => {
   const { startNewGame, isLoading } = useGame();
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
 
+  useEffect(() => {
+    console.log('HomeScreen mounted');
+  }, []);
+
   const handleModeSelect = (mode: GameMode) => {
+    console.log('Mode selected:', mode);
     setSelectedMode(mode);
   };
 
+  useEffect(() => {
+    console.log('Selected mode changed to:', selectedMode);
+  }, [selectedMode]);
+
   const handleStartGame = async () => {
+    console.log('Starting game with mode:', selectedMode);
     if (selectedMode) {
-      await startNewGame(selectedMode);
+      try {
+        await startNewGame(selectedMode);
+        console.log('Game started successfully');
+      } catch (error) {
+        console.error('Error starting game:', error);
+      }
     }
   };
 
@@ -23,49 +37,53 @@ const HomeScreen: React.FC = () => {
       
       <div className="w-full mb-8">
         <h2 className="text-lg font-medium mb-4">Select Game Mode:</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button
+        <div className="grid grid-cols-1 gap-4">
+          <button
+            type="button"
             onClick={() => handleModeSelect('human-human')}
-            className={`p-4 ${
+            className={`p-4 w-full rounded-md ${
               selectedMode === 'human-human'
                 ? 'bg-blue-600 text-white'
                 : 'bg-white border border-gray-300'
             }`}
           >
             Human vs Human
-          </Button>
+          </button>
           
-          <Button
+          <button
+            type="button"
             onClick={() => handleModeSelect('human-computer')}
-            className={`p-4 ${
+            className={`p-4 w-full rounded-md ${
               selectedMode === 'human-computer'
                 ? 'bg-blue-600 text-white'
                 : 'bg-white border border-gray-300'
             }`}
           >
             Human vs Computer
-          </Button>
+          </button>
           
-          <Button
+          <button
+            type="button"
             onClick={() => handleModeSelect('computer-computer')}
-            className={`p-4 ${
+            className={`p-4 w-full rounded-md ${
               selectedMode === 'computer-computer'
                 ? 'bg-blue-600 text-white'
                 : 'bg-white border border-gray-300'
             }`}
           >
             Computer vs Computer (Demo)
-          </Button>
+          </button>
         </div>
       </div>
       
-      <Button
+      <button
+        type="button"
         onClick={handleStartGame}
         disabled={!selectedMode || isLoading}
-        className="w-full py-3 bg-green-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="w-full py-3 rounded-md bg-green-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         {isLoading ? 'Loading...' : 'Start Game'}
-      </Button>
+      </button>
     </div>
   );
 };

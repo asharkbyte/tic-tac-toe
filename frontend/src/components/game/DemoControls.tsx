@@ -3,18 +3,18 @@ import { useGame } from '../../context/GameContext';
 import { Button } from '../ui/button';
 import { Play, Pause, RefreshCw } from 'lucide-react';
 
-interface DemoControlsProps {
-  gameId: string;
-}
-
-const DemoControls: React.FC<DemoControlsProps> = ({ gameId }) => {
+const DemoControls: React.FC = () => {
   const { gameState, startDemo, pauseDemo, resetDemo, isLoading } = useGame();
   
+  console.log('DemoControls rendering with gameState:', gameState);
+  
   if (!gameState || !gameState.demo) {
+    console.log('DemoControls not rendering - no gameState.demo');
     return null;
   }
   
   const { isActive, isPaused } = gameState.demo;
+  console.log('Demo state:', { isActive, isPaused });
   
   return (
     <div className="flex justify-center space-x-4 mt-6">

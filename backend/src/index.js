@@ -36,7 +36,11 @@ app.post('/api/game/new', (req, res) => {
     board: games.get(gameId).board,
     currentPlayer: games.get(gameId).currentPlayer,
     status: games.get(gameId).status,
-    scores: games.get(gameId).scores
+    scores: games.get(gameId).scores,
+    demo: {
+      isActive: games.get(gameId).demo.isActive,
+      isPaused: games.get(gameId).demo.isPaused
+    }
   });
 });
 

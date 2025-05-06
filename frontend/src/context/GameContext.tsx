@@ -1,5 +1,5 @@
-import { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
-import { GameState, GameMode, Player, Board, GameStatus, Difficulty } from '../types';
+import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { GameState, GameMode } from '../types';
 import * as api from '../api';
 import { useSettings } from './SettingsContext';
 
@@ -86,11 +86,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
+      console.log('Starting new game with mode:', mode);
       const newGameState = await api.createNewGame(mode, settings.difficulty);
+      console.log('New game state:', newGameState);
       setGameState(newGameState);
       setGameMode(mode);
       
       if (mode === 'computer-computer') {
+        console.log('Starting demo for computer-computer mode');
         await startDemo();
       }
     } catch (err) {
@@ -147,8 +150,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
+      console.log('Starting demo for game ID:', gameState.gameId);
+      
       const demoState = await api.startDemo(gameState.gameId);
-      setGameState(demoState);
+      console.log('Demo state received:', demoState);
+      console.log('Demo object:', demoState.demo);
+      
+      if (demoState && demoState.demo) {
+        console.log('Setting game state with demo sequence:', demoState.demo.sequence);
+        setGameState(demoState);
+      } else {
+        console.error('Demo state or demo object is missing in the response');
+        setError('Failed to start demo: Invalid response from server');
+      }
     } catch (err) {
       console.error('Error starting demo:', err);
       setError('Failed to start demo');
@@ -164,13 +178,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await api.pauseDemo(gameState.gameId);
-      setGameState(prev => prev ? {
-        ...prev,
-        demo: {
-          ...prev.demo,
-          isPaused: response.demo.isPaused
-        }
-      } : null);
+      setGameState((prev: GameState | null) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          demo: {
+            ...prev.demo!,
+            isPaused: response.demo.isPaused
+          }
+        };
+      });
     } catch (err) {
       console.error('Error pausing demo:', err);
       setError('Failed to pause demo');

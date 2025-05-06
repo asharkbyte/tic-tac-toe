@@ -17,7 +17,7 @@ const GameContainer: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <GameBoard />
       {gameMode === 'computer-computer' && gameState.demo && (
-        <DemoControls gameId={gameState.gameId} />
+        <DemoControls />
       )}
     </div>
   );
