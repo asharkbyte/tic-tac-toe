@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { SettingsProvider } from './context/SettingsContext';
+import { GameProvider } from './context/GameContext';
+import HomeScreen from './components/home/HomeScreen';
+import GameBoard from './components/game/GameBoard';
+import DemoControls from './components/game/DemoControls';
+import { useGame } from './context/GameContext';
 
-function App() {
-  const [count, setCount] = useState(0)
+const GameContainer: React.FC = () => {
+  const { gameState, gameMode } = useGame();
+
+  if (!gameState) {
+    return <HomeScreen />;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="container mx-auto px-4 py-8">
+      <GameBoard />
+      {gameMode === 'computer-computer' && gameState.demo && (
+        <DemoControls gameId={gameState.gameId} />
+      )}
+    </div>
+  );
+};
 
-export default App
+const App: React.FC = () => {
+  return (
+    <SettingsProvider>
+      <GameProvider>
+        <div className="min-h-screen bg-gray-50">
+          <header className="bg-blue-600 text-white py-4 shadow-md">
+            <div className="container mx-auto px-4">
+              <h1 className="text-2xl font-bold text-center">Tic Tac Toe</h1>
+            </div>
+          </header>
+          <main className="container mx-auto py-8">
+            <GameContainer />
+          </main>
+          <footer className="mt-auto py-4 text-center text-gray-500 text-sm">
+            <p>© 2025 Tic Tac Toe Game</p>
+          </footer>
+        </div>
+      </GameProvider>
+    </SettingsProvider>
+  );
+};
+
+export default App;
